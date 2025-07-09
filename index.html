@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Organizador de Tareas Escolares</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f4f8;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    input[type="text"] {
+      width: 70%;
+      padding: 10px;
+      margin-right: 10px;
+    }
+    button {
+      padding: 10px 15px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: white;
+      margin-top: 10px;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 5px;
+    }
+    li.completed {
+      text-decoration: line-through;
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mis Tareas Escolares</h1>
+  <input type="text" id="tareaInput" placeholder="Escribe tu tarea..." />
+  <button onclick="agregarTarea()">Agregar</button>
+
+  <ul id="listaTareas"></ul>
+
+  <script>
+    let lista = document.getElementById("listaTareas");
+
+    function cargarTareas() {
+      const tareas = JSON.parse(localStorage.getItem("tareas")) || [];
+      lista.innerHTML = "";
+      tareas.forEach((tarea, index) => {
+        const li = document.createElement("li");
+        li.className = tarea.completada ? "completed" : "";
+        li.innerHTML = \`
+          <span onclick="toggleCompleta(\${index})">\${tarea.texto}</span>
+          <button onclick="eliminarTarea(\${index})">Eliminar</button>
+        \`;
+        lista.appendChild(li);
+      });
+    }
+
+    function agregarTarea() {
+      const input = document.getElementById("tareaInput");
+      const texto = input.value.trim();
+      if (texto !== "") {
+        const tareas = JSON.parse(localStorage.getItem("tareas")) || [];
+        tareas.push({ texto, completada: false });
+        localStorage.setItem("tareas", JSON.stringify(tareas));
+        input.value = "";
+        cargarTareas();
+      }
+    }
+
+    function eliminarTarea(index) {
+      const tareas = JSON.parse(localStorage.getItem("tareas"));
+      tareas.splice(index, 1);
+      localStorage.setItem("tareas", JSON.stringify(tareas));
+      cargarTareas();
+    }
+
+    function toggleCompleta(index) {
+      const tareas = JSON.parse(localStorage.getItem("tareas"));
+      tareas[index].completada = !tareas[index].completada;
+      localStorage.setItem("tareas", JSON.stringify(tareas));
+      cargarTareas();
+    }
+
+    cargarTareas();
+  </script>
+</body>
+</html>
